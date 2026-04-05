@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device‑width, initial‑scale=1.0" />
+  <title>Cyber Risk Assessment</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f2f2f2;
+      color: #333;
+    }
+    h1, h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+    .score-display {
+      text-align: center;
+      margin: 15px 0 10px;
+    }
+    .score-big {
+      font-size: 3rem;
+      font-weight: 700;
+      margin: 0;
+      color: #333;
+    }
+    .score-label {
+      font-size: 1.1rem;
+      margin: 5px 0 0;
+    }
+    .risk-bar-container {
+      margin: 10px 20px;
+      height: 18px;
+      background: #eee;
+      border-radius: 9px;
+      overflow: hidden;
+      position: relative;
+    }
+    .risk-bar {
+      height: 100%;
+      transition: width 0.3s ease, background-color 0.3s ease;
+      background: #00c800;
+      border-radius: 9px 0 0 9px;
+    }
+    .matrix-container {
+      margin: 20px auto;
+      text-align: center;
+    }
+    .matrix {
+      display: inline-grid;
+      grid-template-columns: repeat(5, 50px);
+      grid-template-rows: repeat(5, 50px);
+      gap: 2px;
+      margin: 10px auto;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+      padding: 2px;
+    }
+    .matrix-cell {
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: #fff;
+      background: #00c800;
+      transition: background 0.2s ease, transform 0.1s ease;
+    }
+    .matrix-cell:hover {
+      transform: scale(1.05);
+    }
+    .matrix-cell.selected {
+      box-shadow: 0 0 0 3px #333;
+    }
+
+    .low {
+      background: #00c800;
+    }
+    .medium {
+      background: #ffab00;
+    }
+    .high {
+      background: #d30000;
+    }
+
+    .axis-labels {
+      margin-top: 10px;
+      font-size: 0.85rem;
+      color: #555;
+    }
+    .input-sliders {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f8f8f8;
+      border-radius: 8px;
+    }
+    .input-group {
+      margin: 10px 0;
+    }
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    input[type="range"] {
+      width: 100%;
+    }
+    .value-label {
+      font-size: 0.9rem;
+      margin-left: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Cyber Risk Assessment (NIST‑style)</h1>
+
+    <div class="score-display">
+      <p class="score-big" id="scorePercent">0%<p>
+      <p id="scoreLabel" class="score-label">Basso</p>
+    </div>
+
+    <div class="risk-bar-container">
+      <div class="risk-bar" id="riskBar"></div>
+    </div>
+
+    <div class="matrix-container">
+      <h2>Risk Matrix (5×5)</h2>
+      <div class="matrix" id="matrix"></div>
+      <div class="axis-labels">
+        <p>Y: Likelihood (Very Low → Very High)</p>
+        <p>X: Impact (Very Low → Very High)</p>
+      </div>
+    </div>
+
+    <div class="input-sliders">
+      <h2>Parametri NIST‑style</h2>
+      <div class="input-group">
+        <label for="likelihood">Likelihood (1–5)</label>
+        <input type="range" id="likelihood" min="1" max="5" value="3" />
+        <span class="value-label">3</span>
+      </div>
+      <div class="input-group">
+        <label for="impact">Impact (1–5)</label>
+        <input type="range" id="impact" min="1" max="5" value="3" />
+        <span class="value-label">3</span>
+      </div>
+      <div class="input-group">
+        <label for="controlScore">
+          Maturità controlli (0.0–1.0) – NIST CSF / SP 800‑30
+        </label>
+        <input type="range" id="controlScore" min="0" max="1" step="0.1" value="0.5" />
+        <span class="value-label">0.5</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Costanti NIST‑style
+    const MAX_SCORE = 25; // 5×5
+
+    // Elementi UI
+    const matrixEl = document.getElementById("matrix");
+    const scorePercentEl = document.getElementById("scorePercent");
+    const scoreLabelEl = document.getElementById("scoreLabel");
+    const riskBarEl = document.getElementById("riskBar");
+    const likelihoodEl = document.getElementById("likelihood");
+    const impactEl = document.getElementById("impact");
+    const controlScoreEl = document.getElementById("controlScore");
+
+    // Helper visualizzazione slider
+    document.querySelectorAll("input[type='range']").forEach(input => {
+      const label = input.parentElement.querySelector(".value-label");
+      input.oninput = () => (label.textContent = parseFloat(input.value).toFixed(1));
+    });
+
+    // Crea la matrice 5×5
+    function buildMatrix() {
+      matrixEl.innerHTML = "";
+      for (let y = 5; y >= 1; y--) {
+        for (let x = 1; x <= 5; x++) {
+          const cell = document.createElement("div");
+          cell.className = "matrix-cell";
+          cell.textContent = x * y;
+          cell.dataset.x = x;
+          cell.dataset.y = y;
+          matrixEl.appendChild(cell);
+        }
+      }
+    }
+
+    // Ottieni colore e livello dallo score (0–100)
+    function getColorAndLevel(score) {
+      if (score <= 30) {
+        return { color: "#00c800", level: "Basso" };
+      } else if (score <= 69) {
+        return { color: "#ffab00", level: "Medio" };
+      } else {
+        return { color: "#d30000", level: "Alto" };
+      }
+    }
+
+    // Aggiorna UI in base ai parametri
+    function updateRisk() {
+      const likelihood = parseInt(likelihoodEl.value, 10);
+      const impact = parseInt(impactEl.value, 10);
+      const controlScore = parseFloat(controlScoreEl.value);
+
+      // NIST‑style: RiskScore = (Likelihood × Impact) × (1 - ControlScore)
+      const rawScore = likelihood * impact;
+      const riskScore = rawScore * (1 - controlScore);
+      const scorePercent = Math.min(100, (riskScore / MAX_SCORE) * 100);
+
+      const { color, level } = getColorAndLevel(scorePercent);
+
+      // Aggiorna score grande
+      scorePercentEl.textContent = Math.round(scorePercent) + "%";
+
+      // Aggiorna label livello
+      scoreLabelEl.textContent = level;
+
+      // Aggiorna barra
+      riskBarEl.style.width = `${scorePercent}%`;
+      riskBarEl.style.backgroundColor = color;
+
+      // Aggiorna matrice: colori e celle evidenziate
+      Array.from(matrixEl.children).forEach(cell => {
+        const x = parseInt(cell.dataset.x, 10);
+        const y = parseInt(cell.dataset.y, 10);
+        const cellScore = x * y;
+        const { color, level } = getColorAndLevel((cellScore / MAX_SCORE) * 100);
+
+        cell.className = "matrix-cell " + (level === "Basso" ? "low" : level === "Medio" ? "medium" : "high");
+
+        // evidenzia la cella corrispondente a likelihood×impact
+        if (x === impact && y === likelihood) {
+          cell.classList.add("selected");
+        } else {
+          cell.classList.remove("selected");
+        }
+      });
+    }
+
+    // Inizializza matrice e aggiorna prima volta
+    buildMatrix();
+    updateRisk();
+
+    // Ricalcola su cambi input
+    likelihoodEl.addEventListener("input", updateRisk);
+    impactEl.addEventListener("input", updateRisk);
+    controlScoreEl.addEventListener("input", updateRisk);
+  </script>
+</body>
+</html>
