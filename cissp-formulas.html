@@ -1,0 +1,1305 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CISSP Formulas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  /* ── Reset & Variables ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg:        #f5f4f0;
+    --bg2:       #eceae3;
+    --bg3:       #e2dfd6;
+    --surface:   #ffffff;
+    --border:    #d4d0c8;
+    --text:      #1a1916;
+    --text2:     #5c5a54;
+    --text3:     #908e88;
+    --accent:    #2d4af5;
+    --accent2:   #1a30c4;
+    --accent-bg: #eef0fd;
+    --green:     #1a7a4a;
+    --green-bg:  #e8f5ee;
+    --red:       #c23b2e;
+    --red-bg:    #fdecea;
+    --formula-bg:#f0f4ff;
+    --formula-border: #c0ccf8;
+    --shadow:    0 1px 3px rgba(0,0,0,.08), 0 4px 16px rgba(0,0,0,.06);
+    --shadow-lg: 0 2px 8px rgba(0,0,0,.10), 0 8px 32px rgba(0,0,0,.08);
+    --radius:    12px;
+    --radius-sm: 8px;
+    --sidebar-w: 260px;
+    --font-mono: 'Space Mono', monospace;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'DM Sans', sans-serif;
+    --transition: .18s cubic-bezier(.4,0,.2,1);
+  }
+
+  [data-theme="dark"] {
+    --bg:        #111210;
+    --bg2:       #191917;
+    --bg3:       #222220;
+    --surface:   #1e1e1c;
+    --border:    #2e2e2b;
+    --text:      #f0ede8;
+    --text2:     #a8a49e;
+    --text3:     #68665f;
+    --accent:    #6b85ff;
+    --accent2:   #8fa0ff;
+    --accent-bg: #1a1f3a;
+    --green:     #4eca7e;
+    --green-bg:  #0f2a1c;
+    --red:       #f07268;
+    --red-bg:    #2a100e;
+    --formula-bg:#161b30;
+    --formula-border: #2a3366;
+    --shadow:    0 1px 3px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.2);
+    --shadow-lg: 0 2px 8px rgba(0,0,0,.4), 0 8px 32px rgba(0,0,0,.3);
+  }
+
+  /* ── Base ─────────────────────────────────────────────────── */
+  html { font-size: 15px; scroll-behavior: smooth; }
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+    transition: background var(--transition), color var(--transition);
+  }
+
+  /* ── Layout ───────────────────────────────────────────────── */
+  .app { display: flex; min-height: 100vh; }
+
+  /* ── Sidebar ──────────────────────────────────────────────── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0; left: 0; bottom: 0;
+    overflow-y: auto;
+    z-index: 100;
+    transition: background var(--transition), border-color var(--transition), transform var(--transition);
+  }
+  .sidebar-header {
+    padding: 22px 18px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 1.25rem;
+    letter-spacing: -.02em;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .logo-badge {
+    background: var(--accent);
+    color: #fff;
+    font-size: .6rem;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 4px;
+    letter-spacing: .06em;
+  }
+  .logo-sub {
+    font-size: .72rem;
+    color: var(--text3);
+    font-family: var(--font-body);
+    font-weight: 400;
+  }
+  .sidebar-nav { flex: 1; padding: 12px 0; }
+  .nav-section { margin-bottom: 4px; }
+  .nav-domain-btn {
+    width: 100%;
+    text-align: left;
+    padding: 8px 18px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: color var(--transition);
+  }
+  .nav-domain-btn:hover { color: var(--accent); }
+  .nav-domain-btn.active { color: var(--accent); }
+  .nav-domain-chevron { transition: transform var(--transition); font-size: .8rem; }
+  .nav-domain-btn.open .nav-domain-chevron { transform: rotate(90deg); }
+  .nav-formulas { display: none; }
+  .nav-formulas.open { display: block; }
+  .nav-formula-btn {
+    width: 100%;
+    text-align: left;
+    padding: 7px 18px 7px 28px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: .82rem;
+    color: var(--text2);
+    transition: color var(--transition), background var(--transition);
+    border-left: 2px solid transparent;
+    margin-left: 0;
+  }
+  .nav-formula-btn:hover { color: var(--text); background: var(--bg3); }
+  .nav-formula-btn.active {
+    color: var(--accent);
+    background: var(--accent-bg);
+    border-left-color: var(--accent);
+    font-weight: 500;
+  }
+  .sidebar-footer {
+    padding: 14px 18px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .show-all-btn {
+    background: var(--accent-bg);
+    color: var(--accent);
+    border: 1px solid var(--formula-border);
+    border-radius: var(--radius-sm);
+    padding: 7px 12px;
+    cursor: pointer;
+    font-family: var(--font-body);
+    font-size: .8rem;
+    font-weight: 500;
+    transition: background var(--transition), color var(--transition);
+  }
+  .show-all-btn:hover { background: var(--accent); color: #fff; }
+  .controls-row { display: flex; gap: 8px; align-items: center; }
+  .icon-btn {
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 7px 11px;
+    cursor: pointer;
+    font-size: .9rem;
+    color: var(--text2);
+    transition: background var(--transition), color var(--transition);
+    display: flex; align-items: center; gap: 5px;
+    font-family: var(--font-body);
+    font-size: .78rem;
+    font-weight: 500;
+    flex: 1;
+    justify-content: center;
+  }
+  .icon-btn:hover { background: var(--accent-bg); color: var(--accent); }
+  .icon-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  /* ── Main content ─────────────────────────────────────────── */
+  .main {
+    margin-left: var(--sidebar-w);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+  .topbar {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 32px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    transition: background var(--transition), border-color var(--transition);
+  }
+  .hamburger {
+    display: none;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text);
+    font-size: 1.2rem;
+  }
+  .breadcrumb {
+    font-size: .78rem;
+    color: var(--text3);
+    flex: 1;
+  }
+  .breadcrumb span { color: var(--text2); }
+  .content { padding: 32px; max-width: 900px; }
+
+  /* ── Formula Card ─────────────────────────────────────────── */
+  .formula-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px 32px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow);
+    transition: background var(--transition), border-color var(--transition);
+    animation: fadeUp .25s ease both;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .formula-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    gap: 16px;
+  }
+  .formula-titles { flex: 1; }
+  .formula-name-it {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 1.35rem;
+    letter-spacing: -.03em;
+    color: var(--text);
+    line-height: 1.2;
+  }
+  .formula-name-en {
+    font-family: var(--font-head);
+    font-weight: 600;
+    font-size: .9rem;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+  .formula-domain-tag {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    background: var(--accent-bg);
+    color: var(--accent);
+    padding: 4px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* Formula display */
+  .formula-box {
+    background: var(--formula-bg);
+    border: 1px solid var(--formula-border);
+    border-radius: var(--radius-sm);
+    padding: 18px 24px;
+    margin: 16px 0;
+    text-align: center;
+  }
+  .formula-text {
+    font-family: var(--font-mono);
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--accent);
+    letter-spacing: -.01em;
+  }
+  .formula-alt {
+    font-family: var(--font-mono);
+    font-size: .82rem;
+    color: var(--text3);
+    margin-top: 6px;
+  }
+
+  /* Descriptions */
+  .desc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin: 14px 0;
+  }
+  .desc-block {
+    background: var(--bg2);
+    border-radius: var(--radius-sm);
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+  }
+  .desc-lang {
+    font-size: .65rem;
+    font-weight: 700;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .desc-text { font-size: .85rem; color: var(--text2); line-height: 1.5; }
+
+  /* Variables */
+  .vars-section { margin: 14px 0; }
+  .section-label {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--text3);
+    margin-bottom: 8px;
+  }
+  .vars-list { display: flex; flex-wrap: wrap; gap: 8px; }
+  .var-chip {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 6px 12px;
+    font-size: .8rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .var-chip-name {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    color: var(--accent);
+    font-size: .78rem;
+  }
+  .var-chip-desc { color: var(--text2); }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 20px 0;
+  }
+
+  /* Calculator */
+  .calc-section { }
+  .calc-label {
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .calc-icon { font-size: 1rem; }
+  .calc-inputs { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 14px; }
+  .calc-field { display: flex; flex-direction: column; gap: 5px; min-width: 140px; flex: 1; }
+  .calc-field label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text2);
+    font-family: var(--font-body);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .calc-field label span {
+    font-family: var(--font-mono);
+    font-size: .78rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .calc-input-wrap { position: relative; display: flex; align-items: center; }
+  .calc-input {
+    width: 100%;
+    padding: 9px 12px;
+    padding-right: 40px;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+    font-size: .88rem;
+    color: var(--text);
+    transition: border-color var(--transition), background var(--transition);
+    outline: none;
+    -moz-appearance: textfield;
+  }
+  .calc-input::-webkit-inner-spin-button,
+  .calc-input::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .calc-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(45,74,245,.12); }
+  .calc-input.error { border-color: var(--red); }
+  .calc-unit {
+    position: absolute;
+    right: 10px;
+    font-size: .7rem;
+    color: var(--text3);
+    font-family: var(--font-body);
+    font-weight: 500;
+    pointer-events: none;
+  }
+  .calc-btn {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: var(--radius-sm);
+    padding: 10px 22px;
+    cursor: pointer;
+    font-family: var(--font-head);
+    font-weight: 700;
+    font-size: .88rem;
+    letter-spacing: .02em;
+    transition: background var(--transition), transform .1s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    align-self: flex-end;
+  }
+  .calc-btn:hover { background: var(--accent2); }
+  .calc-btn:active { transform: scale(.97); }
+  .calc-error {
+    font-size: .78rem;
+    color: var(--red);
+    background: var(--red-bg);
+    border: 1px solid var(--red);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    margin-top: 8px;
+    display: none;
+  }
+  .calc-error.show { display: block; }
+  .calc-result {
+    background: var(--green-bg);
+    border: 1px solid var(--green);
+    border-radius: var(--radius-sm);
+    padding: 16px 20px;
+    margin-top: 14px;
+    display: none;
+    animation: fadeUp .2s ease both;
+  }
+  .calc-result.show { display: block; }
+  .result-value {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 1.5rem;
+    color: var(--green);
+    letter-spacing: -.02em;
+    margin-bottom: 4px;
+  }
+  .result-note { font-size: .8rem; color: var(--text2); }
+
+  /* All formulas overview */
+  .overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+  }
+  .overview-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    cursor: pointer;
+    transition: box-shadow var(--transition), border-color var(--transition), transform var(--transition);
+    box-shadow: var(--shadow);
+    animation: fadeUp .2s ease both;
+  }
+  .overview-card:nth-child(2) { animation-delay: .04s; }
+  .overview-card:nth-child(3) { animation-delay: .08s; }
+  .overview-card:nth-child(4) { animation-delay: .12s; }
+  .overview-card:nth-child(5) { animation-delay: .16s; }
+  .overview-card:hover {
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  .ov-domain { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--text3); margin-bottom: 6px; }
+  .ov-name { font-family: var(--font-head); font-weight: 800; font-size: 1.05rem; color: var(--text); margin-bottom: 6px; letter-spacing: -.02em; }
+  .ov-formula { font-family: var(--font-mono); font-size: .82rem; color: var(--accent); background: var(--formula-bg); border: 1px solid var(--formula-border); border-radius: 6px; padding: 5px 10px; display: inline-block; margin-bottom: 10px; }
+  .ov-desc { font-size: .78rem; color: var(--text2); line-height: 1.45; }
+  .ov-arrow { color: var(--accent); font-size: .9rem; margin-top: 12px; font-weight: 700; }
+
+  /* Page header */
+  .page-header {
+    margin-bottom: 28px;
+    animation: fadeUp .2s ease both;
+  }
+  .page-title {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 2rem;
+    letter-spacing: -.04em;
+    color: var(--text);
+    line-height: 1.15;
+    margin-bottom: 6px;
+  }
+  .page-sub { font-size: .9rem; color: var(--text2); max-width: 600px; }
+  .domain-header {
+    margin-bottom: 22px;
+    animation: fadeUp .2s ease both;
+  }
+  .domain-title {
+    font-family: var(--font-head);
+    font-weight: 800;
+    font-size: 1.5rem;
+    letter-spacing: -.03em;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .domain-count { font-size: .82rem; color: var(--text3); }
+
+  /* Mobile overlay */
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.4);
+    z-index: 99;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .sidebar-overlay.open { display: block; }
+    .main { margin-left: 0; }
+    .hamburger { display: block; }
+    .content { padding: 20px 16px; }
+    .topbar { padding: 12px 16px; }
+    .desc-grid { grid-template-columns: 1fr; }
+    .overview-grid { grid-template-columns: 1fr; }
+    .formula-card { padding: 20px 18px; }
+    .page-title { font-size: 1.5rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <!-- Sidebar overlay (mobile) -->
+  <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo">
+        <span>CISSP</span>
+        <span class="logo-badge">CALC</span>
+      </div>
+      <div class="logo-sub" id="logo-sub">Formule per l'esame CISSP</div>
+    </div>
+    <nav class="sidebar-nav" id="sidebarNav">
+      <!-- built by JS -->
+    </nav>
+    <div class="sidebar-footer">
+      <button class="show-all-btn" id="showAllBtn" onclick="showAll()">📋 <span id="showAllLabel">Tutte le formule</span></button>
+      <div class="controls-row">
+        <button class="icon-btn" id="themeBtn" onclick="toggleTheme()">🌙 <span id="themeLabel">Scuro</span></button>
+        <button class="icon-btn" id="langBtn" onclick="toggleLang()">🌐 <span id="langLabel">English</span></button>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <button class="hamburger" onclick="openSidebar()">☰</button>
+      <div class="breadcrumb" id="breadcrumb">
+        CISSP Formulas / <span id="breadcrumbSub">Home</span>
+      </div>
+    </div>
+    <div class="content" id="mainContent">
+      <!-- rendered by JS -->
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════════════════════════
+const FORMULAS = [
+  {
+    id: "sle",
+    domain: "Risk",
+    domain_it: "Security & Risk Management",
+    domain_en: "Security & Risk Management",
+    name_it: "SLE – Single Loss Expectancy",
+    name_en: "SLE – Single Loss Expectancy",
+    formula: "SLE = AV × EF",
+    formula_alt: null,
+    desc_it: "Calcola il danno economico medio causato da un singolo evento di rischio su un asset.",
+    desc_en: "Calculates the average monetary loss from a single occurrence of a risk event on an asset.",
+    vars: {
+      AV: { it: "Asset Value – Valore economico dell'asset", en: "Asset Value – Economic value of the asset", unit: "€" },
+      EF: { it: "Exposure Factor – Percentuale di danno (0–1)", en: "Exposure Factor – Percentage of damage (0–1)", unit: "%" }
+    },
+    calc: (inputs) => {
+      const av = parseFloat(inputs.AV);
+      const ef = parseFloat(inputs.EF);
+      if (isNaN(av) || isNaN(ef)) return null;
+      if (av <= 0) return { error_it: "AV deve essere > 0", error_en: "AV must be > 0" };
+      if (ef < 0 || ef > 1) return { error_it: "EF deve essere tra 0 e 1 (es. 0.4 per 40%)", error_en: "EF must be between 0 and 1 (e.g. 0.4 for 40%)" };
+      const val = av * ef;
+      return {
+        value: val,
+        label: "SLE",
+        unit: "€",
+        note_it: `Un singolo evento costa mediamente €${fmt(val)}`,
+        note_en: `A single event costs on average €${fmt(val)}`
+      };
+    }
+  },
+  {
+    id: "ale",
+    domain: "Risk",
+    domain_it: "Security & Risk Management",
+    domain_en: "Security & Risk Management",
+    name_it: "ALE – Annual Loss Expectancy",
+    name_en: "ALE – Annual Loss Expectancy",
+    formula: "ALE = SLE × ARO",
+    formula_alt: "ALE = AV × EF × ARO",
+    desc_it: "Calcola il danno annuo atteso moltiplicando la perdita singola per la frequenza annuale del rischio.",
+    desc_en: "Calculates the expected annual loss by multiplying the single-event loss by its annual frequency.",
+    vars: {
+      SLE: { it: "Single Loss Expectancy – Danno per singolo evento", en: "Single Loss Expectancy – Loss per single event", unit: "€" },
+      ARO: { it: "Annual Rate of Occurrence – Frequenza annuale", en: "Annual Rate of Occurrence – Annual frequency", unit: "×/yr" }
+    },
+    calc: (inputs) => {
+      const sle = parseFloat(inputs.SLE);
+      const aro = parseFloat(inputs.ARO);
+      if (isNaN(sle) || isNaN(aro)) return null;
+      if (sle <= 0) return { error_it: "SLE deve essere > 0", error_en: "SLE must be > 0" };
+      if (aro < 0) return { error_it: "ARO deve essere ≥ 0", error_en: "ARO must be ≥ 0" };
+      const val = sle * aro;
+      return {
+        value: val,
+        label: "ALE",
+        unit: "€/anno",
+        note_it: `Il rischio costa mediamente €${fmt(val)} all'anno`,
+        note_en: `This risk costs on average €${fmt(val)} per year`
+      };
+    }
+  },
+  {
+    id: "aro",
+    domain: "Risk",
+    domain_it: "Security & Risk Management",
+    domain_en: "Security & Risk Management",
+    name_it: "ARO – Annual Rate of Occurrence",
+    name_en: "ARO – Annual Rate of Occurrence",
+    formula: "ARO = occorrenze / anno",
+    formula_alt: null,
+    desc_it: "Indica quante volte all'anno ci si aspetta che un determinato rischio si verifichi. Può essere un numero decimale (es. 0.1 = una volta ogni 10 anni).",
+    desc_en: "Indicates how many times per year a specific risk is expected to occur. Can be a decimal (e.g. 0.1 = once every 10 years).",
+    vars: {
+      n: { it: "Numero di occorrenze attese nell'arco di un anno", en: "Number of expected occurrences within a year", unit: "×" },
+      y: { it: "Anni di riferimento (se si normalizza su più anni)", en: "Reference years (if normalizing over multiple years)", unit: "yr" }
+    },
+    calc: (inputs) => {
+      const n = parseFloat(inputs.n);
+      const y = parseFloat(inputs.y);
+      if (isNaN(n) || isNaN(y)) return null;
+      if (n < 0) return { error_it: "Il numero di occorrenze non può essere negativo", error_en: "Number of occurrences cannot be negative" };
+      if (y <= 0) return { error_it: "Gli anni devono essere > 0", error_en: "Years must be > 0" };
+      const val = n / y;
+      return {
+        value: val,
+        label: "ARO",
+        unit: "×/anno",
+        note_it: val < 1
+          ? `Il rischio avviene circa ogni ${fmt(1/val)} anni`
+          : `Il rischio avviene ${fmt(val)} volte l'anno`,
+        note_en: val < 1
+          ? `The risk occurs approximately every ${fmt(1/val)} years`
+          : `The risk occurs ${fmt(val)} times per year`
+      };
+    }
+  },
+  {
+    id: "ale_saving",
+    domain: "Risk",
+    domain_it: "Security & Risk Management",
+    domain_en: "Security & Risk Management",
+    name_it: "Risparmio ALE (Beneficio del Controllo)",
+    name_en: "ALE Saving (Control Benefit)",
+    formula: "Saving = ALE(pre) − ALE(post) − ACS",
+    formula_alt: null,
+    desc_it: "Calcola il vantaggio economico netto di implementare un controllo di sicurezza, sottraendo il costo annuo del controllo alla riduzione di ALE.",
+    desc_en: "Calculates the net economic benefit of implementing a security control, subtracting the control's annual cost from the ALE reduction.",
+    vars: {
+      ALEpre:  { it: "ALE prima del controllo (€/anno)", en: "ALE before control (€/year)", unit: "€" },
+      ALEpost: { it: "ALE dopo il controllo (€/anno)", en: "ALE after control (€/year)", unit: "€" },
+      ACS:     { it: "Annual Cost of Safeguard – Costo annuo del controllo", en: "Annual Cost of Safeguard – Annual cost of control", unit: "€" }
+    },
+    calc: (inputs) => {
+      const pre  = parseFloat(inputs.ALEpre);
+      const post = parseFloat(inputs.ALEpost);
+      const acs  = parseFloat(inputs.ACS);
+      if (isNaN(pre) || isNaN(post) || isNaN(acs)) return null;
+      if (pre < 0 || post < 0 || acs < 0) return { error_it: "Tutti i valori devono essere ≥ 0", error_en: "All values must be ≥ 0" };
+      const val = pre - post - acs;
+      return {
+        value: val,
+        label: "Net Saving",
+        unit: "€/anno",
+        note_it: val > 0
+          ? `Il controllo è conveniente: risparmio netto €${fmt(val)}/anno`
+          : `Il controllo NON è conveniente: costo netto €${fmt(Math.abs(val))}/anno`,
+        note_en: val > 0
+          ? `Control is worth it: net saving €${fmt(val)}/year`
+          : `Control is NOT worth it: net cost €${fmt(Math.abs(val))}/year`
+      };
+    }
+  },
+  {
+    id: "symmetric_keys",
+    domain: "Crypto",
+    domain_it: "Crittografia",
+    domain_en: "Cryptography",
+    name_it: "Chiavi Simmetriche (n utenti)",
+    name_en: "Symmetric Keys (n users)",
+    formula: "K = n × (n − 1) / 2",
+    formula_alt: null,
+    desc_it: "Calcola il numero di chiavi simmetriche necessarie affinché n utenti possano comunicare in modo sicuro in coppie distinte.",
+    desc_en: "Calculates the number of symmetric keys needed for n users to communicate securely in distinct pairs.",
+    vars: {
+      n: { it: "Numero di utenti coinvolti", en: "Number of users involved", unit: "utenti" }
+    },
+    calc: (inputs) => {
+      const n = parseInt(inputs.n);
+      if (isNaN(n)) return null;
+      if (n < 2) return { error_it: "n deve essere almeno 2", error_en: "n must be at least 2" };
+      const val = n * (n - 1) / 2;
+      return {
+        value: val,
+        label: "K",
+        unit: "chiavi",
+        note_it: `Con ${n} utenti servono ${val} chiavi simmetriche distinte`,
+        note_en: `With ${n} users you need ${val} distinct symmetric keys`
+      };
+    }
+  },
+  {
+    id: "asymmetric_keys",
+    domain: "Crypto",
+    domain_it: "Crittografia",
+    domain_en: "Cryptography",
+    name_it: "Chiavi Asimmetriche (n utenti)",
+    name_en: "Asymmetric Keys (n users)",
+    formula: "K = 2n",
+    formula_alt: null,
+    desc_it: "In crittografia asimmetrica ogni utente ha una coppia chiave pubblica/privata. Il totale delle chiavi scala linearmente con il numero di utenti.",
+    desc_en: "In asymmetric cryptography each user has a public/private key pair. The total number of keys scales linearly with the number of users.",
+    vars: {
+      n: { it: "Numero di utenti", en: "Number of users", unit: "utenti" }
+    },
+    calc: (inputs) => {
+      const n = parseInt(inputs.n);
+      if (isNaN(n)) return null;
+      if (n < 1) return { error_it: "n deve essere almeno 1", error_en: "n must be at least 1" };
+      const val = 2 * n;
+      return {
+        value: val,
+        label: "K",
+        unit: "chiavi",
+        note_it: `${n} utenti → ${n} chiavi pubbliche + ${n} chiavi private = ${val} chiavi totali`,
+        note_en: `${n} users → ${n} public keys + ${n} private keys = ${val} total keys`
+      };
+    }
+  },
+  {
+    id: "tower_of_hanoi",
+    domain: "Crypto",
+    domain_it: "Crittografia",
+    domain_en: "Cryptography",
+    name_it: "Torre di Hanoi (backup rotation)",
+    name_en: "Tower of Hanoi (backup rotation)",
+    formula: "T(n) = 2ⁿ − 1",
+    formula_alt: null,
+    desc_it: "Numero minimo di mosse per risolvere la Torre di Hanoi con n dischi. In ambito CISSP è usato per la rotazione dei nastri di backup.",
+    desc_en: "Minimum moves to solve the Tower of Hanoi with n disks. In CISSP context, it models backup tape rotation strategies.",
+    vars: {
+      n: { it: "Numero di dischi (o set di nastri di backup)", en: "Number of disks (or backup tape sets)", unit: "dischi" }
+    },
+    calc: (inputs) => {
+      const n = parseInt(inputs.n);
+      if (isNaN(n)) return null;
+      if (n < 1) return { error_it: "n deve essere almeno 1", error_en: "n must be at least 1" };
+      if (n > 30) return { error_it: "n troppo grande (max 30)", error_en: "n too large (max 30)" };
+      const val = Math.pow(2, n) - 1;
+      return {
+        value: val,
+        label: "T(n)",
+        unit: "mosse",
+        note_it: `Con ${n} dischi servono ${val} mosse (o cicli di backup)`,
+        note_en: `With ${n} disks you need ${val} moves (or backup cycles)`
+      };
+    }
+  },
+  {
+    id: "mtbf",
+    domain: "Availability",
+    domain_it: "Continuità e Disponibilità",
+    domain_en: "Business Continuity & Availability",
+    name_it: "MTBF – Mean Time Between Failures",
+    name_en: "MTBF – Mean Time Between Failures",
+    formula: "MTBF = MTTF + MTTR",
+    formula_alt: null,
+    desc_it: "Tempo medio tra i guasti di un sistema. Somma il tempo medio di funzionamento prima di un guasto (MTTF) e il tempo medio di ripristino (MTTR).",
+    desc_en: "Mean time between system failures. Equals the mean time to failure (MTTF) plus the mean time to repair (MTTR).",
+    vars: {
+      MTTF: { it: "Mean Time to Failure – Tempo medio prima del guasto (ore)", en: "Mean Time to Failure – Average uptime before failure (hours)", unit: "h" },
+      MTTR: { it: "Mean Time to Repair – Tempo medio di ripristino (ore)", en: "Mean Time to Repair – Average recovery time (hours)", unit: "h" }
+    },
+    calc: (inputs) => {
+      const mttf = parseFloat(inputs.MTTF);
+      const mttr = parseFloat(inputs.MTTR);
+      if (isNaN(mttf) || isNaN(mttr)) return null;
+      if (mttf <= 0 || mttr <= 0) return { error_it: "MTTF e MTTR devono essere > 0", error_en: "MTTF and MTTR must be > 0" };
+      const val = mttf + mttr;
+      return {
+        value: val,
+        label: "MTBF",
+        unit: "ore",
+        note_it: `Il sistema ha un ciclo medio di ${fmt(val)} ore tra un guasto e il successivo`,
+        note_en: `The system has an average cycle of ${fmt(val)} hours between failures`
+      };
+    }
+  },
+  {
+    id: "availability",
+    domain: "Availability",
+    domain_it: "Continuità e Disponibilità",
+    domain_en: "Business Continuity & Availability",
+    name_it: "Availability (Disponibilità)",
+    name_en: "Availability",
+    formula: "A = MTTF / (MTTF + MTTR)",
+    formula_alt: "A = MTTF / MTBF",
+    desc_it: "Percentuale di tempo in cui un sistema è operativo. Espressa come valore tra 0 e 1 (o in percentuale).",
+    desc_en: "Percentage of time a system is operational. Expressed as a value between 0 and 1 (or as a percentage).",
+    vars: {
+      MTTF: { it: "Mean Time to Failure (ore)", en: "Mean Time to Failure (hours)", unit: "h" },
+      MTTR: { it: "Mean Time to Repair (ore)", en: "Mean Time to Repair (hours)", unit: "h" }
+    },
+    calc: (inputs) => {
+      const mttf = parseFloat(inputs.MTTF);
+      const mttr = parseFloat(inputs.MTTR);
+      if (isNaN(mttf) || isNaN(mttr)) return null;
+      if (mttf <= 0 || mttr <= 0) return { error_it: "MTTF e MTTR devono essere > 0", error_en: "MTTF and MTTR must be > 0" };
+      const val = mttf / (mttf + mttr);
+      const pct = (val * 100).toFixed(4);
+      const nines = countNines(val);
+      return {
+        value: val,
+        label: "A",
+        unit: "",
+        note_it: `Disponibilità: ${pct}% (${nines} – ~${downtime(val)}/anno di downtime)`,
+        note_en: `Availability: ${pct}% (${nines} – ~${downtime(val)}/year of downtime)`
+      };
+    }
+  },
+  {
+    id: "rpo_rto",
+    domain: "Availability",
+    domain_it: "Continuità e Disponibilità",
+    domain_en: "Business Continuity & Availability",
+    name_it: "RPO / RTO – Recovery Objectives",
+    name_en: "RPO / RTO – Recovery Objectives",
+    formula: "Downtime tollerato = RTO − RPO",
+    formula_alt: null,
+    desc_it: "RPO (Recovery Point Objective): massima perdita di dati accettabile. RTO (Recovery Time Objective): tempo massimo tollerabile di inattività. La differenza indica il gap operativo.",
+    desc_en: "RPO (Recovery Point Objective): maximum acceptable data loss. RTO (Recovery Time Objective): maximum tolerable downtime. The difference indicates the operational gap.",
+    vars: {
+      RTO: { it: "Recovery Time Objective (ore)", en: "Recovery Time Objective (hours)", unit: "h" },
+      RPO: { it: "Recovery Point Objective (ore)", en: "Recovery Point Objective (hours)", unit: "h" }
+    },
+    calc: (inputs) => {
+      const rto = parseFloat(inputs.RTO);
+      const rpo = parseFloat(inputs.RPO);
+      if (isNaN(rto) || isNaN(rpo)) return null;
+      if (rto < 0 || rpo < 0) return { error_it: "RTO e RPO devono essere ≥ 0", error_en: "RTO and RPO must be ≥ 0" };
+      const val = rto - rpo;
+      return {
+        value: Math.abs(val),
+        label: val >= 0 ? "Gap operativo" : "Overlap",
+        unit: "ore",
+        note_it: val >= 0
+          ? `Tra ripristino (${rto}h) e perdita dati (${rpo}h) c'è un gap di ${fmt(val)}h`
+          : `RPO > RTO: attenzione, la finestra di recupero è negativa di ${fmt(Math.abs(val))}h`,
+        note_en: val >= 0
+          ? `Between recovery (${rto}h) and data loss (${rpo}h) there's a ${fmt(val)}h gap`
+          : `RPO > RTO: warning, the recovery window is negative by ${fmt(Math.abs(val))}h`
+      };
+    }
+  }
+];
+
+// ── Helper functions ────────────────────────────────────────────
+function fmt(n) {
+  if (Number.isInteger(n)) return n.toLocaleString('it-IT');
+  return parseFloat(n.toFixed(4)).toLocaleString('it-IT', { maximumFractionDigits: 4 });
+}
+function countNines(a) {
+  if (a >= 0.99999) return "Five 9s (99.999%)";
+  if (a >= 0.9999)  return "Four 9s (99.99%)";
+  if (a >= 0.999)   return "Three 9s (99.9%)";
+  if (a >= 0.99)    return "Two 9s (99%)";
+  return "< 99%";
+}
+function downtime(a) {
+  const hours = (1 - a) * 8760;
+  if (hours < 1)   return `${(hours * 60).toFixed(0)} min`;
+  if (hours < 24)  return `${hours.toFixed(1)} h`;
+  return `${(hours / 24).toFixed(1)} gg`;
+}
+
+// Domain ordering
+const DOMAIN_ORDER = ["Risk", "Crypto", "Availability"];
+const DOMAIN_META = {
+  Risk:         { it: "Security & Risk Management", en: "Security & Risk Management", icon: "🛡️" },
+  Crypto:       { it: "Crittografia",               en: "Cryptography",               icon: "🔐" },
+  Availability: { it: "Continuità e Disponibilità", en: "Business Continuity",        icon: "⚡" },
+};
+
+// ═══════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════
+let lang  = localStorage.getItem('cissp-lang')  || 'it';
+let theme = localStorage.getItem('cissp-theme') || 'light';
+let activeView = 'all'; // 'all' | formula id | domain key
+let openDomains = { Risk: true, Crypto: true, Availability: true };
+
+// ═══════════════════════════════════════════════════════════════
+//  THEME
+// ═══════════════════════════════════════════════════════════════
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', theme);
+  const btn = document.getElementById('themeBtn');
+  const lbl = document.getElementById('themeLabel');
+  if (theme === 'dark') {
+    btn.textContent = ''; btn.innerHTML = '☀️ <span id="themeLabel"></span>';
+    document.getElementById('themeLabel').textContent = lang === 'it' ? 'Chiaro' : 'Light';
+  } else {
+    btn.innerHTML = '🌙 <span id="themeLabel"></span>';
+    document.getElementById('themeLabel').textContent = lang === 'it' ? 'Scuro' : 'Dark';
+  }
+}
+function toggleTheme() {
+  theme = theme === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('cissp-theme', theme);
+  applyTheme();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  LANGUAGE
+// ═══════════════════════════════════════════════════════════════
+const UI = {
+  it: {
+    logoSub: "Formule per l'esame CISSP",
+    showAll: "Tutte le formule",
+    themeLight: "Chiaro", themeDark: "Scuro",
+    langSwitch: "English",
+    calcTitle: "Calcolatore",
+    calcBtn: "Calcola",
+    varsTitle: "Variabili",
+    descTitle: "Descrizioni",
+    allTitle: "Tutte le Formule CISSP",
+    allSub: "Clicca una formula per aprire il calcolatore interattivo.",
+    errorGeneric: "Inserisci tutti i campi obbligatori con valori validi.",
+    breadHome: "Home",
+  },
+  en: {
+    logoSub: "Formulas for the CISSP exam",
+    showAll: "All formulas",
+    themeLight: "Light", themeDark: "Dark",
+    langSwitch: "Italiano",
+    calcTitle: "Calculator",
+    calcBtn: "Calculate",
+    varsTitle: "Variables",
+    descTitle: "Descriptions",
+    allTitle: "All CISSP Formulas",
+    allSub: "Click a formula to open the interactive calculator.",
+    errorGeneric: "Please fill all required fields with valid values.",
+    breadHome: "Home",
+  }
+};
+function t(key) { return UI[lang][key] || key; }
+
+function applyLang() {
+  document.getElementById('logo-sub').textContent = t('logoSub');
+  document.getElementById('showAllLabel').textContent = t('showAll');
+  document.getElementById('langBtn').innerHTML = `🌐 <span>${t('langSwitch')}</span>`;
+  applyTheme(); // refreshes theme button label too
+  buildSidebar();
+  renderView();
+}
+function toggleLang() {
+  lang = lang === 'it' ? 'en' : 'it';
+  localStorage.setItem('cissp-lang', lang);
+  applyLang();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  SIDEBAR
+// ═══════════════════════════════════════════════════════════════
+function buildSidebar() {
+  const nav = document.getElementById('sidebarNav');
+  nav.innerHTML = '';
+  DOMAIN_ORDER.forEach(domKey => {
+    const formulas = FORMULAS.filter(f => f.domain === domKey);
+    const meta = DOMAIN_META[domKey];
+    const section = document.createElement('div');
+    section.className = 'nav-section';
+    const isOpen = openDomains[domKey];
+    section.innerHTML = `
+      <button class="nav-domain-btn ${isOpen ? 'open' : ''}" onclick="toggleDomain('${domKey}')">
+        <span>${meta.icon} ${lang === 'it' ? meta.it : meta.en}</span>
+        <span class="nav-domain-chevron">›</span>
+      </button>
+      <div class="nav-formulas ${isOpen ? 'open' : ''}" id="domain-${domKey}">
+        ${formulas.map(f => `
+          <button class="nav-formula-btn ${activeView === f.id ? 'active' : ''}"
+            onclick="showFormula('${f.id}')">
+            ${lang === 'it' ? f.name_it : f.name_en}
+          </button>
+        `).join('')}
+      </div>
+    `;
+    nav.appendChild(section);
+  });
+}
+function toggleDomain(domKey) {
+  openDomains[domKey] = !openDomains[domKey];
+  buildSidebar();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function showAll() {
+  activeView = 'all';
+  buildSidebar();
+  renderView();
+  closeSidebar();
+}
+function showFormula(id) {
+  activeView = id;
+  buildSidebar();
+  renderView();
+  closeSidebar();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════════════
+function renderView() {
+  const main = document.getElementById('mainContent');
+  const breadSub = document.getElementById('breadcrumbSub');
+
+  if (activeView === 'all') {
+    breadSub.textContent = t('allTitle');
+    main.innerHTML = renderAll();
+    return;
+  }
+
+  const f = FORMULAS.find(x => x.id === activeView);
+  if (!f) { main.innerHTML = '<p>Not found.</p>'; return; }
+  breadSub.textContent = lang === 'it' ? f.name_it : f.name_en;
+  main.innerHTML = renderFormulaPage(f);
+  initCalc(f);
+}
+
+function renderAll() {
+  return `
+    <div class="page-header">
+      <h1 class="page-title">${t('allTitle')}</h1>
+      <p class="page-sub">${t('allSub')}</p>
+    </div>
+    ${DOMAIN_ORDER.map(domKey => {
+      const formulas = FORMULAS.filter(f => f.domain === domKey);
+      const meta = DOMAIN_META[domKey];
+      return `
+        <div class="domain-header">
+          <div class="domain-title">${meta.icon} ${lang === 'it' ? meta.it : meta.en}</div>
+          <div class="domain-count">${formulas.length} formula${formulas.length !== 1 ? (lang === 'it' ? 'e' : 's') : ''}</div>
+        </div>
+        <div class="overview-grid" style="margin-bottom:32px">
+          ${formulas.map(f => `
+            <div class="overview-card" onclick="showFormula('${f.id}')">
+              <div class="ov-domain">${lang === 'it' ? meta.it : meta.en}</div>
+              <div class="ov-name">${lang === 'it' ? f.name_it : f.name_en}</div>
+              <div class="ov-formula">${f.formula}</div>
+              <div class="ov-desc">${lang === 'it' ? f.desc_it : f.desc_en}</div>
+              <div class="ov-arrow">Apri calcolatore →</div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }).join('')}
+  `;
+}
+
+function renderFormulaPage(f) {
+  const meta = DOMAIN_META[f.domain];
+  const vars = f.vars;
+  return `
+    <div class="formula-card">
+      <div class="formula-header">
+        <div class="formula-titles">
+          <div class="formula-name-it">${f.name_it}</div>
+          ${f.name_en !== f.name_it ? `<div class="formula-name-en">${f.name_en}</div>` : ''}
+        </div>
+        <span class="formula-domain-tag">${meta.icon} ${lang === 'it' ? meta.it : meta.en}</span>
+      </div>
+
+      <div class="formula-box">
+        <div class="formula-text">${f.formula}</div>
+        ${f.formula_alt ? `<div class="formula-alt">anche: ${f.formula_alt}</div>` : ''}
+      </div>
+
+      <div class="vars-section">
+        <div class="section-label">${t('varsTitle')}</div>
+        <div class="vars-list">
+          ${Object.entries(vars).map(([k, v]) => `
+            <div class="var-chip">
+              <span class="var-chip-name">${k}</span>
+              <span class="var-chip-desc">${lang === 'it' ? v.it : v.en}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+
+      <div class="section-label" style="margin-top:16px">${t('descTitle')}</div>
+      <div class="desc-grid">
+        <div class="desc-block">
+          <div class="desc-lang">🇮🇹 Italiano</div>
+          <div class="desc-text">${f.desc_it}</div>
+        </div>
+        <div class="desc-block">
+          <div class="desc-lang">🇬🇧 English</div>
+          <div class="desc-text">${f.desc_en}</div>
+        </div>
+      </div>
+
+      <hr class="divider">
+
+      <div class="calc-section">
+        <div class="calc-label">
+          <span class="calc-icon">🧮</span>
+          ${t('calcTitle')}
+        </div>
+        <div class="calc-inputs" id="calc-inputs-${f.id}">
+          ${Object.entries(vars).map(([k, v]) => `
+            <div class="calc-field">
+              <label for="inp-${f.id}-${k}">
+                <span>${k}</span> — ${lang === 'it' ? v.it : v.en}
+              </label>
+              <div class="calc-input-wrap">
+                <input
+                  class="calc-input"
+                  id="inp-${f.id}-${k}"
+                  type="number"
+                  step="any"
+                  placeholder="0"
+                  aria-label="${k}"
+                  data-var="${k}"
+                >
+                <span class="calc-unit">${v.unit}</span>
+              </div>
+            </div>
+          `).join('')}
+          <button class="calc-btn" onclick="doCalc('${f.id}')">
+            ⚡ ${t('calcBtn')}
+          </button>
+        </div>
+        <div class="calc-error" id="err-${f.id}"></div>
+        <div class="calc-result" id="res-${f.id}">
+          <div class="result-value" id="resval-${f.id}"></div>
+          <div class="result-note" id="resnote-${f.id}"></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function initCalc(f) {
+  // Allow Enter key to trigger calc
+  const inputs = document.querySelectorAll(`[data-var]`);
+  inputs.forEach(inp => {
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') doCalc(f.id);
+    });
+  });
+}
+
+function doCalc(id) {
+  const f = FORMULAS.find(x => x.id === id);
+  if (!f) return;
+
+  const inputs = {};
+  let allFilled = true;
+  Object.keys(f.vars).forEach(k => {
+    const el = document.getElementById(`inp-${id}-${k}`);
+    inputs[k] = el ? el.value : '';
+    if (!el || el.value === '') allFilled = false;
+    if (el) el.classList.remove('error');
+  });
+
+  const errEl = document.getElementById(`err-${id}`);
+  const resEl = document.getElementById(`res-${id}`);
+
+  if (!allFilled) {
+    errEl.textContent = t('errorGeneric');
+    errEl.classList.add('show');
+    resEl.classList.remove('show');
+    Object.keys(f.vars).forEach(k => {
+      const el = document.getElementById(`inp-${id}-${k}`);
+      if (el && el.value === '') el.classList.add('error');
+    });
+    return;
+  }
+
+  const result = f.calc(inputs);
+  if (!result) {
+    errEl.textContent = t('errorGeneric');
+    errEl.classList.add('show');
+    resEl.classList.remove('show');
+    return;
+  }
+  if (result.error_it) {
+    errEl.textContent = lang === 'it' ? result.error_it : result.error_en;
+    errEl.classList.add('show');
+    resEl.classList.remove('show');
+    return;
+  }
+
+  errEl.classList.remove('show');
+  resEl.classList.add('show');
+  const valStr = result.unit
+    ? `${result.label} = ${fmt(result.value)} ${result.unit}`
+    : `${result.label} = ${fmt(result.value)}`;
+  document.getElementById(`resval-${id}`).textContent = valStr;
+  document.getElementById(`resnote-${id}`).textContent = lang === 'it' ? result.note_it : result.note_en;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  MOBILE SIDEBAR
+// ═══════════════════════════════════════════════════════════════
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sidebarOverlay').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  INIT
+// ═══════════════════════════════════════════════════════════════
+(function init() {
+  applyTheme();
+  applyLang();
+})();
+</script>
+</body>
+</html>
